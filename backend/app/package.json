@@ -1,0 +1,22 @@
+{
+  "name": "bmes-backend-app",
+  "version": "1.0.0",
+  "description": "BMES Backend Express App",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "start:dev": "nodemon index.js",
+    "test": "echo \"No tests yet\""
+  },
+  "keywords": [],
+  "author": "BMES Team",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1",
+    "serverless-http": "^4.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11",
+    "serverless-better-credentials": "^2.0.1"
+  }
+}
