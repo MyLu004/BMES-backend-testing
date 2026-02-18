@@ -1,33 +1,43 @@
-const express = require('express');
-const serverless = require('serverless-http');
-
+// app.js or src/app.js
+const express = require("express");
 const app = express();
-app.use(express.json());
 
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', env: process.env.NODE_ENV || 'dev' });
-});
+app.use(express.json({ limit: "1mb" }));
 
-app.post('/v1/ingest', (req, res) => {
-  const body = req.body || {};
+app.get("/health", (req, res) => res.json({ ok: true }));
 
-  if (!body.deviceId || !body.patientId || !body.timestamp || !body.measurements) {
-    return res.status(400).json({ ok: false, reason: 'missing required fields' });
+app.post("/api/v1/ingest", (req, res) => {
+  const body = req.body;
+
+  // Minimal validation (tweak to your schema)
+  if (!body || !body.deviceId || !body.timestamp || !body.readings) {
+    console.log("INGEST_REJECTED", {
+      reason: "missing required fields",
+      receivedAt: new Date().toISOString(),
+      bodyPreview: body ? Object.keys(body) : null,
+    });
+    return res.status(400).json({
+      ok: false,
+      error: "Missing required fields: deviceId, timestamp, readings",
+    });
   }
 
-  res.json({
+  // Log receipt (CloudWatch will capture this in AWS)
+  console.log("INGEST_RECEIVED", {
+    receivedAt: new Date().toISOString(),
+    deviceId: body.deviceId,
+    timestamp: body.timestamp,
+    readingsKeys: Object.keys(body.readings || {}),
+  });
+
+  // Optional: log full payload for early dev (later you may reduce it)
+  console.log("INGEST_PAYLOAD", body);
+
+  return res.json({
     ok: true,
-    ingestId: `ingest-${Date.now()}`,
-    received: body
+    message: "Packet received",
+    receivedAt: new Date().toISOString(),
   });
 });
 
-const port = process.env.PORT || 3000;
-
-if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
-  app.listen(port, () => {
-    console.log(`Express app listening on port ${port}`);
-  });
-}
-
-module.exports.handler = serverless(app);
+module.exports = app;
