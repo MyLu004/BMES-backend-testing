@@ -10,6 +10,20 @@ provider:
   memorySize: 512
   timeout: 10
 
+iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            # Allow the Express app to write and read from DynamoDB
+            - "dynamodb:PutItem" # Save ESP32 data
+            - "dynamodb:GetItem" # Fetch Data
+            - "dynamodb:Scan" # Accesses Items in the table
+            - "dynamodb:Query" # Retrieve Items from a query
+          Resource: 
+            # Restrict access to ONLY our specific table
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/esp32-readings-table"
+
 functions:
   app:
     handler: index.handler
