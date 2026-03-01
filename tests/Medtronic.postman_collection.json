@@ -177,7 +177,7 @@
         "url": {
           "raw": ""
         },
-        "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data with extreme values in the UUID and/or PH field.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+        "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data with extreme values in the UUID and/or PH field.\n\nThe server is expected to reject this payload and return a 400 Bad Request or 422 Unprocessable Entity."
       },
       "response": []
     },
